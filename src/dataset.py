@@ -14,7 +14,7 @@ from PIL import ImageOps
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
-from torchvision.datasets import ImageFolder
+from torchvision.datasets import ImageFolder, EMNIST
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 import pytorch_utils
@@ -119,6 +119,33 @@ def get_dataloaders():
 
     train_dataset = ImageFolder(root=osp.join(root, 'train'), transform=train_transform, loader=pil_loader)
     test_dataset = ImageFolder(root=osp.join(root, 'test'), transform=test_transform, loader=pil_loader)
+    train_loader = DataLoader(dataset=train_dataset, batch_size=192, 
+                                drop_last=True, sampler=ImbalancedDatasetSampler(train_dataset))
+    test_loader = DataLoader(dataset=test_dataset, shuffle=False, batch_size=64)
+    return train_loader, test_loader
+
+def get_dataloaders_using_pytorch():
+    # download dataset
+    root = '../data/emnist_pthdata'
+
+    # transforms for train and test
+    train_transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomAffine(degrees=10, translate=(0.2, 0.2), scale=(0.8, 1.2)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5], std=[0.5])
+    ])
+
+    test_transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5], std=[0.5])
+    ])
+
+    train_dataset = EMNIST(root=root, split='balanced', download=True, train=True, 
+                        transform=train_transform)
+    test_dataset = EMNIST(root=root, split='balanced', download=True, train=False, 
+                        transform=test_transform)
+
     train_loader = DataLoader(dataset=train_dataset, batch_size=192, 
                                 drop_last=True, sampler=ImbalancedDatasetSampler(train_dataset))
     test_loader = DataLoader(dataset=test_dataset, shuffle=False, batch_size=64)
