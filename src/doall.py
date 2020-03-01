@@ -1,4 +1,5 @@
 import os, sys, os.path as osp
+from datetime import datetime
 this_path = osp.split(osp.abspath(__file__))[0]
 sys.path += [osp.join(this_path, 'pytorch_utils')]
 
@@ -33,13 +34,14 @@ def train(model, train_loader, optimizer, loss_fn, epoch):
         optimizer.step()
 
         # to determine accuracy
-        current_correct = (out.softmax(dim=-1).argmax(dim=-1)[0] == target).sum().item()
+        current_correct = (out.softmax(dim=-1).argmax(dim=-1) == target).float().mean().item()
         total_correct_avgmeter.update(current_correct, len(data))
 
         loss_avgmeter.update(loss.item(), 1)
 
         if batch_index % 50  == 0:
-            print(f"epoch #{epoch}, ({batch_index}/{len(train_loader)}, loss={loss_avgmeter.avg}")
+            print(f"epoch #{epoch}, ({batch_index}/{len(train_loader)}, loss={loss_avgmeter.avg}, accuracy={total_correct_avgmeter.avg}")
+            #print(f"sum: {total_correct_avgmeter.sum}, count: {total_correct_avgmeter.count}")
 
     print(f"epoch #{epoch} loss={loss_avgmeter.avg}, accuracy={total_correct_avgmeter.avg}")
 
@@ -65,16 +67,21 @@ def test(model, test_loader, loss_fn, epoch):
         loss_avgmeter.update(loss.item(), 1)
 
         # to determine accuracy
-        current_correct = (out.softmax(dim=-1).argmax(dim=-1)[0] == target).sum().item()
+        current_correct = (out.softmax(dim=-1).argmax(dim=-1) == target).float().mean().item()
         total_correct_avgmeter.update(current_correct, len(data))
 
         if batch_index % 500 == 0:
-            print(f"epoch #{epoch}, ({batch_index}/{len(test_loader)}, loss={loss_avgmeter.avg}")
+            print(f"epoch #{epoch}, ({batch_index}/{len(test_loader)}, loss={loss_avgmeter.avg}, accuracy={total_correct_avgmeter.avg}")
 
     print(f"epoch #{epoch} loss={loss_avgmeter.avg}, accuracy={total_correct_avgmeter.avg}")
 
 
 def main():
+    # determine experiment folder name
+    expt_name = "emnist_" + datetime.now().strftime("%d%b%Y.%H%M%S")
+    current_expt_path = osp.join("../scratch/", expt_name)
+    mkdir_if_missing(current_expt_path)
+
     # data
     train_loader, test_loader = get_dataloaders()
 
@@ -85,15 +92,17 @@ def main():
     optimizer = build_optimizer(model)
 
     # lr scheduler
-    lr_scheduler = build_lr_scheduler(optimizer=optimizer, lr_scheduler='multi_step', stepsize=[20,40,50])
+    lr_scheduler = build_lr_scheduler(optimizer=optimizer, lr_scheduler='multi_step', stepsize=[7,12,15,18])
 
     # objective functions
     loss_fn = nn.CrossEntropyLoss()
 
-    for epoch in range(75):
+    for epoch in range(20):
         train(model, train_loader, optimizer, loss_fn, epoch)
         lr_scheduler.step(epoch)
         test(model, test_loader, loss_fn, epoch)
+        save_checkpoint({'state_dict':model.state_dict(),
+                         'epoch':epoch, 'optimizer':optimizer.state_dict()}, current_expt_path)
 
 if __name__ == "__main__":
     main()

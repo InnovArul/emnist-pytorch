@@ -92,11 +92,17 @@ def download_and_arrange_data():
     target_zipfile = '../data/emnist.zip'
     extraction_dir = '../data/emnist_raw'
     dataset_folder = '../data/emnist'
-    pytorch_utils.download_url(url, target_zipfile)
-    pytorch_utils.unzip_file(target_zipfile, extraction_dir)
+
+    if not osp.exists(target_zipfile):
+        pytorch_utils.download_url(url, target_zipfile)
+
+    if not osp.exists(extraction_dir):
+        pytorch_utils.unzip_file(target_zipfile, extraction_dir)
 
     # arrange the data folders
-    # arrange_dataset_images(osp.join(extraction_dir, "by_merge"), dataset_folder)
+    if not osp.exists(dataset_folder):
+        arrange_dataset_images(osp.join(extraction_dir, "by_merge"), dataset_folder)
+
     return dataset_folder
 
 
