@@ -106,7 +106,7 @@ def download_and_arrange_data():
     return dataset_folder
 
 
-def get_dataloaders():
+def get_dataloaders(test_randomize=False):
     # download dataset
     root = download_and_arrange_data()
 
@@ -127,7 +127,7 @@ def get_dataloaders():
     test_dataset = ImageFolder(root=osp.join(root, 'test'), transform=test_transform, loader=pil_loader)
     train_loader = DataLoader(dataset=train_dataset, batch_size=192, 
                                 drop_last=True, sampler=ImbalancedDatasetSampler(train_dataset))
-    test_loader = DataLoader(dataset=test_dataset, shuffle=False, batch_size=64)
+    test_loader = DataLoader(dataset=test_dataset, shuffle=test_randomize, batch_size=64)
     return train_loader, test_loader
 
 def get_dataloaders_using_pytorch():
