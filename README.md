@@ -25,8 +25,8 @@ The emnist handwritten character recornition dataset will be automatically
 downloaded by the code and the data will be organized into appropriate folder for pytorch to access.
 
 It may take some minutes (~30) to organize the data. 
-As an alternative, you can download the organized data zip file from https://drive.google.com/drive/folders/1JLE0kz9ctZ4HI2vA6gZbec1MY1so5QLK?usp=sharing
-and extract it in the folder `./data/emnist`.
+As an alternative, you can download the organized data zip file from https://drive.google.com/drive/folders/1JLE0kz9ctZ4HI2vA6gZbec1MY1so5QLK?usp=sharing 
+(download size = ~420 MB, after extraction = 3.2 GB) and extract it in the folder `./data/emnist`.
 
 The data directory should have the following structure:
 
