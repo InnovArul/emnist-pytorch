@@ -89,10 +89,14 @@ def pil_loader(path):
 def download_and_arrange_data():
     # download data
     url = "https://s3.amazonaws.com/nist-srd/SD19/by_merge.zip"
-    target_zipfile = '../data/emnist.zip'
+    target_zipfile = '../data/emnist_raw.zip'
     extraction_dir = '../data/emnist_raw'
     dataset_folder = '../data/emnist'
 
+    # if the dataset directory exists, return
+    if osp.exists(dataset_folder): return
+
+    # since the dataset dir doesn't exist, continue to download raw data
     if not osp.exists(target_zipfile):
         pytorch_utils.download_url(url, target_zipfile)
 
