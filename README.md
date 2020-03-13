@@ -55,6 +55,10 @@ python doall.py
 
 The checkpoints are saved under the folder `./scratch/`.
 
+## Demo
+
+Demo notebook with a trained checkpoint is here: https://github.com/InnovArul/emnist-pytorch/blob/master/demos/character_recognition_demo.ipynb
+
 
 ## Credits
 
