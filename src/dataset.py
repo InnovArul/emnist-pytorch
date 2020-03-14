@@ -58,7 +58,11 @@ def arrange_dataset_images(root_path, new_path, test_files_ratio=0.2):
         current_folder = osp.join(root_path, folder)
         if os.path.isdir(current_folder):
             char = get_char_for_folder(folder)
-            print("preparing the character {}".format(char))
+            casesensitive_char = char + "-small"
+            if char.isupper():
+                casesensitive_char = char + "-caps"
+
+            print("preparing the character {} ({})".format(char, casesensitive_char))
  
             # go through all the folders and collect image files
             all_img_files = []
@@ -76,8 +80,8 @@ def arrange_dataset_images(root_path, new_path, test_files_ratio=0.2):
             print("total files {}, train {}, test {}".format(len(all_img_files), len(train_files), len(test_files)))
 
             # collect train, test files
-            char_train_folder = osp.join(train_folder, char)
-            char_test_folder = osp.join(test_folder, char)
+            char_train_folder = osp.join(train_folder, casesensitive_char)
+            char_test_folder = osp.join(test_folder, casesensitive_char)
             write_files_to_folder(char_train_folder, train_files)
             write_files_to_folder(char_test_folder, test_files)
 
@@ -94,7 +98,7 @@ def download_and_arrange_data():
     dataset_folder = '../data/emnist'
 
     # if the dataset directory exists, return
-    if osp.exists(dataset_folder): return
+    if osp.exists(dataset_folder): return dataset_folder
 
     # since the dataset dir doesn't exist, continue to download raw data
     if not osp.exists(target_zipfile):

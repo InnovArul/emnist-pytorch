@@ -81,6 +81,7 @@ def main():
     expt_name = "emnist_" + datetime.now().strftime("%d%b%Y.%H%M%S")
     current_expt_path = osp.join("../scratch/", expt_name)
     mkdir_if_missing(current_expt_path)
+    print("checkpoints are stored in: ", current_expt_path)
 
     # data
     train_loader, test_loader = get_dataloaders()
